@@ -1,11 +1,37 @@
 require('dotenv').config();
 const express = require('express');
+
+const morgan = require('morgan');
+const logger = require('./src/utils/logger');
+
 const config = require('./config/index');
 const connectDB = require('./src/utils/db');
 
 const app = express();
 connectDB();
 
+const morganFormat = ':method :url :status :response-time ms';
+
+app.use(
+    morgan(morganFormat, {
+        stream: {
+            write: (message) => {
+                const logObject = {
+                    method: message.split(' ')[0],
+                    url: message.split(' ')[1],
+                    status: message.split(' ')[2],
+                    responseTime: message.split(' ')[3],
+                };
+                logger.info(JSON.stringify(logObject));
+            },
+        },
+    })
+);
+
+app.get('/', (req, res) => {
+    res.send('Hello from Feel Alive!');
+});
+
 app.listen(config.server.port, () => {
-    console.log('listening on', process.env.PORT);
+    console.log('Server running');
 });

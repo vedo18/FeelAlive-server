@@ -5,10 +5,7 @@ const DB_STRING = config.server.dbString;
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(DB_STRING, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        await mongoose.connect(DB_STRING);
         console.log('Database Connected');
     } catch (err) {
         console.error(err.message);
