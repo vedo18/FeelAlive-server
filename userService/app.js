@@ -10,6 +10,8 @@ const connectDB = require('./src/utils/db');
 const app = express();
 connectDB();
 
+app.use(express.json());
+
 const morganFormat = ':method :url :status :response-time ms';
 
 app.use(
@@ -31,6 +33,8 @@ app.use(
 app.get('/', (req, res) => {
     res.send('Hello from Feel Alive!');
 });
+
+app.use('/api/v1', require('./src/v1/routes/index'));
 
 app.listen(config.server.port, () => {
     console.log('Server running');

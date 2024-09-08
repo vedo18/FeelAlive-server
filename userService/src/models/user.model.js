@@ -1,16 +1,20 @@
 const mongoose = require('mongoose');
+const privatePlugin = require('mongoose-private');
+
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+    fullName: {
+        type: String,
+        trim: true,
+    },
     username: {
         type: String,
-        required: true,
         unique: true,
         trim: true,
     },
     email: {
         type: String,
-        required: true,
         unique: true,
         lowercase: true,
         trim: true,
@@ -18,6 +22,7 @@ const userSchema = new Schema({
     isEmailVerified: {
         type: Boolean,
         default: false,
+        private: true,
     },
     phoneNumber: {
         type: String,
@@ -25,9 +30,11 @@ const userSchema = new Schema({
     isPhoneVerified: {
         type: Boolean,
         default: false,
+        private: true,
     },
     password: {
         type: String,
+        private: true,
     },
     bio: {
         type: String,
@@ -68,11 +75,9 @@ const userSchema = new Schema({
         type: {
             type: String,
             enum: ['Point'],
-            required: true,
         },
         coordinates: {
             type: [Number],
-            required: true,
         },
     },
 
@@ -83,5 +88,7 @@ const userSchema = new Schema({
 });
 
 userSchema.index({ location: '2dsphere' });
+
+mongoose.plugin(privatePlugin);
 
 module.exports = mongoose.model('User', userSchema);
