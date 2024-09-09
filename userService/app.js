@@ -7,10 +7,14 @@ const logger = require('./src/utils/logger');
 const config = require('./config/index');
 const connectDB = require('./src/utils/db');
 
+const { errorHandler } = require('./src/middlewares/index');
+
 const app = express();
 connectDB();
 
 app.use(express.json());
+
+app.use(errorHandler);
 
 const morganFormat = ':method :url :status :response-time ms';
 
