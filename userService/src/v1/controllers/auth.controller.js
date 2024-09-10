@@ -1,6 +1,7 @@
 const { User } = require('../../models/index');
+const { asyncHandler } = require('../../middlewares/index');
 
-module.exports.signUp = async (req, res) => {
+module.exports.signUp = asyncHandler(async (req, res) => {
     const data = req.body;
     console.log('data', data);
 
@@ -22,4 +23,4 @@ module.exports.signUp = async (req, res) => {
     });
 
     res.send({ user: user });
-};
+});

@@ -14,8 +14,6 @@ connectDB();
 
 app.use(express.json());
 
-app.use(errorHandler);
-
 const morganFormat = ':method :url :status :response-time ms';
 
 app.use(
@@ -39,6 +37,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1', require('./src/v1/routes/index'));
+
+app.use(errorHandler);
 
 app.listen(config.server.port, () => {
     console.log('Server running');
