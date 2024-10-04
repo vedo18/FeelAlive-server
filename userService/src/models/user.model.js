@@ -4,87 +4,86 @@ const privatePlugin = require('mongoose-private');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    fullName: {
-        type: String,
-        trim: true,
+  fullName: {
+    type: String,
+    trim: true,
+  },
+  username: {
+    type: String,
+    trim: true,
+    sparse: true,
+  },
+  email: {
+    type: String,
+    lowercase: true,
+    trim: true,
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+    private: true,
+  },
+  phoneNumber: {
+    type: String,
+  },
+  isPhoneVerified: {
+    type: Boolean,
+    default: false,
+    private: true,
+  },
+  password: {
+    type: String,
+    private: true,
+  },
+  bio: {
+    type: String,
+    maxLength: 250,
+  },
+  profilePicture: {
+    type: String,
+  },
+  interests: {
+    type: [String],
+    default: [],
+  },
+  activitiesPosted: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Activity',
     },
-    username: {
-        type: String,
-        unique: true,
-        trim: true,
+  ],
+  activitiesJoined: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Activity',
     },
-    email: {
-        type: String,
-        unique: true,
-        lowercase: true,
-        trim: true,
+  ],
+  followers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
-    isEmailVerified: {
-        type: Boolean,
-        default: false,
-        private: true,
+  ],
+  following: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
-    phoneNumber: {
-        type: String,
+  ],
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
     },
-    isPhoneVerified: {
-        type: Boolean,
-        default: false,
-        private: true,
+    coordinates: {
+      type: [Number],
     },
-    password: {
-        type: String,
-        private: true,
-    },
-    bio: {
-        type: String,
-        maxLength: 250,
-    },
-    profilePicture: {
-        type: String,
-    },
-    interests: {
-        type: [String],
-        default: [],
-    },
-    activitiesPosted: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Activity',
-        },
-    ],
-    activitiesJoined: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Activity',
-        },
-    ],
-    followers: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-        },
-    ],
-    following: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-        },
-    ],
-    location: {
-        type: {
-            type: String,
-            enum: ['Point'],
-        },
-        coordinates: {
-            type: [Number],
-        },
-    },
+  },
 
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 userSchema.index({ location: '2dsphere' });

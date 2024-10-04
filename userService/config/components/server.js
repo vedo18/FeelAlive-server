@@ -4,6 +4,8 @@ const schema = Joi.object({
   NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
   PORT: Joi.string().required(),
   DB_STRING: Joi.string().required(),
+  JWT_SECRET: Joi.string().required(),
+  JWT_EXPIRATION_TIME: Joi.string().required(),
 }).unknown(); // Allow unknown keys
 
 const { error, value: envVars } = schema.validate(process.env);
@@ -23,6 +25,8 @@ const config = {
   isProduction: envVars.NODE_ENV === 'production',
   port: envVars.PORT,
   dbString: envVars.DB_STRING,
+  jwtSecret: envVars.JWT_SECRET,
+  jwtExpirationTime: envVars.JWT_EXPIRATION_TIME,
 };
 
 module.exports = config;
