@@ -11,7 +11,16 @@ module.exports.generateToken = async (user) => {
     expiresIn: server.jwtExpirationTime,
   };
 
-  const token = jwt.sign(payload, server.jwtSecret, options);
+  return jwt.sign(payload, server.jwtSecret, options);
+};
 
-  return token;
+module.exports.generateRefreshToken = async (user) => {
+  const payload = {
+    id: user._id,
+    email: user.email,
+  };
+  const options = {
+    expiresIn: '7d',
+  };
+  return jwt.sign(payload, server.jwtRefreshSecret, options);
 };

@@ -1,6 +1,6 @@
 const { User } = require('../../models/index');
 const { asyncHandler } = require('../../middlewares/index');
-const { generateToken } = require('../../utils/token');
+const { generateToken, generateRefreshToken } = require('../../utils/token');
 
 module.exports.signUp = asyncHandler(async (req, res) => {
   const data = req.body;
@@ -26,7 +26,8 @@ module.exports.signUp = asyncHandler(async (req, res) => {
     username,
   });
 
-  const token = await generateToken(user);
+  const accessToken = await generateToken(user);
+  const refreshToken = await generateRefreshToken(user);
 
-  res.send({ user: user, token: token });
+  res.send({ user: user, token: { accessToken, refreshToken } });
 });
