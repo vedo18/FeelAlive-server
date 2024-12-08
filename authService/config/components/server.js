@@ -7,6 +7,7 @@ const schema = Joi.object({
   JWT_ACCESS_SECRET: Joi.string().required(),
   JWT_EXPIRATION_TIME: Joi.string().required(),
   JWT_REFRESH_SECRET: Joi.string().required(),
+  FAST_TO_SMS: Joi.string().required(),
 }).unknown(); // Allow unknown keys
 
 const { error, value: envVars } = schema.validate(process.env);
@@ -29,6 +30,7 @@ const config = {
   jwtSecret: envVars.JWT_ACCESS_SECRET,
   jwtExpirationTime: envVars.JWT_EXPIRATION_TIME,
   jwtRefreshSecret: envVars.JWT_REFRESH_SECRET,
+  OTP_API_KEY: envVars.FAST_TO_SMS,
 };
 
 module.exports = config;

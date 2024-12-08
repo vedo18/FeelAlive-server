@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const { User } = require('../../models/index');
 const { asyncHandler } = require('../../middlewares/index');
 const { generateToken, generateRefreshToken } = require('../../utils/token');
+const { generateOTP, sendOTP } = require('../../utils/otp');
 
 module.exports.signUp = asyncHandler(async (req, res) => {
   const data = req.body;
@@ -23,9 +24,26 @@ module.exports.signUp = asyncHandler(async (req, res) => {
   const user = await User.create({
     fullName: data.fullName,
     email: data.email,
+    phoneNumber: data.phoneNumber,
+    isEmailVerified: false, // For now set it to false until verified by email verification process
     password: hashedPassword,
     username,
   });
+
+  const generatedOTP = await generateOTP();
+  console.log(
+    '🚀 ~ module.exports.signUp=asyncHandler ~ generatedOTP:',
+    generatedOTP
+  );
+
+  await sendOTP(data.phoneNumber, generatedOTP);
+  console.log('otp sent successfully');
+
+  const updatedUser = await User.findOneAndUpdate(
+    { phoneNumber: data.phoneNumber },
+    { otp: generatedOTP },
+    { new: true }
+  );
 
   const accessToken = await generateToken(user);
   const refreshToken = await generateRefreshToken(user);

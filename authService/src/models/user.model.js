@@ -1,3 +1,4 @@
+const { options } = require('joi');
 const mongoose = require('mongoose');
 const privatePlugin = require('mongoose-private');
 
@@ -25,6 +26,10 @@ const userSchema = new Schema({
   },
   phoneNumber: {
     type: String,
+  },
+  otp: {
+    type: Number,
+    private: true,
   },
   isPhoneVerified: {
     type: Boolean,
