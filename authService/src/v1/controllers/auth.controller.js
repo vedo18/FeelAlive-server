@@ -23,7 +23,7 @@ module.exports.signUp = asyncHandler(async (req, res) => {
       { new: true }
     );
 
-    res.send({ error: false, message: ' OTP sent successfully.' });
+    res.send({ error: false, message: 'OTP sent successfully.' });
   }
 
   const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -49,7 +49,7 @@ module.exports.signUp = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-  res.send({ error: false, message: ' OTP sent successfully.' });
+  res.send({ error: false, message: 'OTP sent successfully.' });
 });
 
 module.exports.verifyOTP = asyncHandler(async (req, res) => {
@@ -58,7 +58,7 @@ module.exports.verifyOTP = asyncHandler(async (req, res) => {
   const ifExistingUser = await User.findOne({ phoneNumber: data.phoneNumber });
 
   if (!ifExistingUser) {
-    return res.send({ error: true, message: ' User Not Found' });
+    return res.send({ error: true, message: 'User Not Found' });
   }
 
   if (data.otp.toString() !== ifExistingUser.otp) {
@@ -80,20 +80,25 @@ module.exports.verifyOTP = asyncHandler(async (req, res) => {
 });
 
 module.exports.login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { phoneNumber } = req.body;
 
-  const user = await User.findOne({ email: data.email });
+  const user = await User.findOne({ phoneNumber });
 
-  if (!user) return res.send({ error: true, message: ' User Does not Exist' });
+  if (!user)
+    return res.send({
+      error: true,
+      message: ' User Does not Exist. Please Sign up!',
+    });
 
-  if (ifExistingUser && !ifExistingUser.isEmailVerified) {
-    //TODO: return with otp to their email address
-  }
+  const generatedOTP = await generateOTP();
 
-  // const encPassword =  TODO : Add bcrypt
+  await sendOTP(phoneNumber, generatedOTP);
 
-  const accessToken = await generateToken(user);
-  const refreshToken = await generateRefreshToken(user);
+  await User.findOneAndUpdate(
+    { phoneNumber: phoneNumber },
+    { otp: generatedOTP.toString() },
+    { new: true }
+  );
 
-  res.send({ user: user, token: { accessToken, refreshToken } });
+  res.send({ error: false, message: 'OTP sent successfully' });
 });

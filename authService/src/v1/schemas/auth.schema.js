@@ -12,7 +12,12 @@ const verifyOTP = Joi.object({
   otp: Joi.number().required(),
 });
 
+const login = Joi.object({
+  phoneNumber: Joi.number().required(),
+});
+
 module.exports = {
   signup,
   verifyOTP,
+  login,
 };
