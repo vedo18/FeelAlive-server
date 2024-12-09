@@ -6,7 +6,6 @@ const { generateOTP, sendOTP } = require('../../utils/otp');
 
 module.exports.signUp = asyncHandler(async (req, res) => {
   const data = req.body;
-  console.log('data', data);
 
   const ifExistingUser = await User.findOne({ email: data.email });
 
@@ -55,7 +54,6 @@ module.exports.signUp = asyncHandler(async (req, res) => {
 
 module.exports.verifyOTP = asyncHandler(async (req, res) => {
   const data = req.body;
-  console.log('data', data);
 
   const ifExistingUser = await User.findOne({ phoneNumber: data.phoneNumber });
 
