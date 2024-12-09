@@ -13,8 +13,18 @@ module.exports.signUp = asyncHandler(async (req, res) => {
   if (ifExistingUser && ifExistingUser.isEmailVerified)
     return res.send({ error: true, message: ' User Already Exist' });
 
-  if (ifExistingUser && !ifExistingUser.isEmailVerified) {
-    //TODO: return with otp to their email address
+  if (ifExistingUser && !ifExistingUser.isPhoneVerified) {
+    const generatedOTP = await generateOTP();
+
+    await sendOTP(data.phoneNumber, generatedOTP);
+
+    await User.findOneAndUpdate(
+      { phoneNumber: data.phoneNumber },
+      { otp: generatedOTP.toString() },
+      { new: true }
+    );
+
+    res.send({ error: false, message: ' OTP sent successfully.' });
   }
 
   const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -31,24 +41,44 @@ module.exports.signUp = asyncHandler(async (req, res) => {
   });
 
   const generatedOTP = await generateOTP();
-  console.log(
-    '🚀 ~ module.exports.signUp=asyncHandler ~ generatedOTP:',
-    generatedOTP
-  );
 
   await sendOTP(data.phoneNumber, generatedOTP);
-  console.log('otp sent successfully');
 
-  const updatedUser = await User.findOneAndUpdate(
+  await User.findOneAndUpdate(
     { phoneNumber: data.phoneNumber },
-    { otp: generatedOTP },
+    { otp: generatedOTP.toString() },
     { new: true }
   );
+
+  res.send({ error: false, message: ' OTP sent successfully.' });
+});
+
+module.exports.verifyOTP = asyncHandler(async (req, res) => {
+  const data = req.body;
+  console.log('data', data);
+
+  const ifExistingUser = await User.findOne({ phoneNumber: data.phoneNumber });
+
+  if (!ifExistingUser) {
+    return res.send({ error: true, message: ' User Not Found' });
+  }
+
+  if (data.otp.toString() !== ifExistingUser.otp) {
+    return res.send({ error: true, message: 'Invalid OTP' });
+  }
+
+  if (!ifExistingUser.isPhoneVerified) {
+    await User.findOneAndUpdate(
+      { phoneNumber: data.phoneNumber },
+      { isPhoneVerified: true },
+      { new: true }
+    );
+  }
 
   const accessToken = await generateToken(user);
   const refreshToken = await generateRefreshToken(user);
 
-  res.send({ user: user, token: { accessToken, refreshToken } });
+  res.send({ user: ifExistingUser, token: { accessToken, refreshToken } });
 });
 
 module.exports.login = asyncHandler(async (req, res) => {
