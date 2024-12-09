@@ -7,6 +7,12 @@ const signup = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
+const verifyOTP = Joi.object({
+  phoneNumber: Joi.number().required(),
+  otp: Joi.number().required(),
+});
+
 module.exports = {
   signup,
+  verifyOTP,
 };

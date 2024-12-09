@@ -10,8 +10,8 @@ module.exports.signUp = asyncHandler(async (req, res) => {
 
   const ifExistingUser = await User.findOne({ email: data.email });
 
-  if (ifExistingUser && ifExistingUser.isEmailVerified)
-    return res.send({ error: true, message: ' User Already Exist' });
+  if (ifExistingUser && ifExistingUser.isPhoneVerified)
+    return res.send({ error: true, message: 'User Already Exist' });
 
   if (ifExistingUser && !ifExistingUser.isPhoneVerified) {
     const generatedOTP = await generateOTP();
@@ -31,7 +31,7 @@ module.exports.signUp = asyncHandler(async (req, res) => {
 
   const username = data.username ? data.username : undefined;
 
-  const user = await User.create({
+  await User.create({
     fullName: data.fullName,
     email: data.email,
     phoneNumber: data.phoneNumber,
@@ -75,8 +75,8 @@ module.exports.verifyOTP = asyncHandler(async (req, res) => {
     );
   }
 
-  const accessToken = await generateToken(user);
-  const refreshToken = await generateRefreshToken(user);
+  const accessToken = await generateToken(ifExistingUser);
+  const refreshToken = await generateRefreshToken(ifExistingUser);
 
   res.send({ user: ifExistingUser, token: { accessToken, refreshToken } });
 });
