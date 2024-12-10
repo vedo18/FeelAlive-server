@@ -2,6 +2,8 @@ const unirest = require('unirest');
 
 const config = require('../../config/index');
 
+const logger = require('./logger');
+
 module.exports.generateOTP = async (length = 6) => {
   if (length <= 0) {
     throw new Error('OTP length must be greater than 0');

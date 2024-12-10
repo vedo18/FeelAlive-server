@@ -92,13 +92,22 @@ module.exports.login = asyncHandler(async (req, res) => {
 
   const generatedOTP = await generateOTP();
 
-  await sendOTP(phoneNumber, generatedOTP);
+  try {
+    await sendOTP(phoneNumber, generatedOTP);
+    await User.findOneAndUpdate(
+      { phoneNumber: phoneNumber },
+      { otp: generatedOTP.toString() },
+      { new: true }
+    );
 
-  await User.findOneAndUpdate(
-    { phoneNumber: phoneNumber },
-    { otp: generatedOTP.toString() },
-    { new: true }
-  );
+    res.send({ error: false, message: 'OTP sent successfully' });
+  } catch (error) {
+    console.error('Error while sending OTP:', error.message);
+    res.status(500).send({
+      error: true,
+      message: 'Failed to send OTP. Please try again later.',
+    });
+  }
 
   res.send({ error: false, message: 'OTP sent successfully' });
 });
