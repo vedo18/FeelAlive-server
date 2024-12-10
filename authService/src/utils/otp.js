@@ -25,23 +25,25 @@ module.exports.sendOTP = async (phoneNumber, otp) => {
       'Content-Type': 'application/x-www-form-urlencoded',
     });
 
-    // Use form for "otp" route
     req.form({
       variables_values: otp, // OTP value
       route: 'otp', // Route for OTPs
       numbers: phoneNumber, // Comma-separated phone numbers
     });
 
-    console.log('reqqqqq', req);
-
-    req.end((res) => {
-      if (res.error) {
-        console.error('Error sending SMS:', res.error);
-      } else {
-        console.log('SMS sent successfully:', res.body);
-      }
+    return new Promise((resolve, reject) => {
+      req.end((res) => {
+        if (res.error || res.status !== 200) {
+          console.error('Error sending SMS:', res.error || res.body);
+          reject(new Error('Failed to send OTP. Please try again.'));
+        } else {
+          console.log('SMS sent successfully:', res.body);
+          resolve(res.body);
+        }
+      });
     });
   } catch (error) {
     console.error('Error occurred while sending OTP:', error);
+    throw new Error('An unexpected error occurred while sending OTP.');
   }
 };
