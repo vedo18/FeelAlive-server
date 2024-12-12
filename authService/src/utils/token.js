@@ -20,7 +20,7 @@ module.exports.generateRefreshToken = async (user) => {
     email: user.email,
   };
   const options = {
-    expiresIn: '7d',
+    expiresIn: server.jwtRefreshExpirationTime,
   };
   return jwt.sign(payload, server.jwtRefreshSecret, options);
 };
