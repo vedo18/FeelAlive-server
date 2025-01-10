@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
   res.send('Hello from Feel Alive! User Service in Action!');
 });
 
-// app.use('/api/v1', require('./src/v1/routes/index'));
+app.use('/api/v1', require('./src/v1/routes/index'));
 
 app.use(errorHandler);
 
